@@ -1,0 +1,15 @@
+#    password: 123456
+#    jdbc:mysql://192.168.1.177:3306/sell?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
+spring:
+  druid:
+    url: jdbc:mysql://localhost:3306/ssm?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
+    username: root
+    password: root
+    maxActive: 30 #最大连接数
+    maxWait: 10000 #最大连接等待时间ms
+#    driverClassName: com.mysql.jdbc.Driver
+  jpa:
+    show-sql: true #打开sql语句提示
+server:
+  servlet:
+    context-path: /sell
