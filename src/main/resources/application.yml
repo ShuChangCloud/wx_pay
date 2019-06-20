@@ -2,14 +2,18 @@
 #    jdbc:mysql://192.168.1.177:3306/sell?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
 spring:
   druid:
-    url: jdbc:mysql://localhost:3306/ssm?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
+    url: jdbc:mysql://192.168.1.177:3306/sell?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
     username: root
-    password: root
+    password: 123456
     maxActive: 30 #最大连接数
     maxWait: 10000 #最大连接等待时间ms
-#    driverClassName: com.mysql.jdbc.Driver
+  #    driverClassName: com.mysql.jdbc.Driver
   jpa:
     show-sql: true #打开sql语句提示
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss  #日期格式化标准
+    default-property-inclusion: non_null  #返回json时 忽略null
 server:
   servlet:
     context-path: /sell
+  port: 8888

@@ -20,14 +20,14 @@ public class DataSourceConfiguration {
 
     @Bean
     @ConfigurationProperties(prefix = "spring.druid")
-    public DruidDataSource druidDataSource(){
-        DruidDataSource dataSource=new DruidDataSource();
+    public DruidDataSource druidDataSource() {
+        DruidDataSource dataSource = new DruidDataSource();
         dataSource.setProxyFilters(Lists.newArrayList(statFilter()));
         return dataSource;
     }
 
     @Bean
-    public StatFilter statFilter(){
+    public StatFilter statFilter() {
         StatFilter statFilter = new StatFilter();
         statFilter.setLogSlowSql(true);
         statFilter.setSlowSqlMillis(5);
@@ -37,7 +37,7 @@ public class DataSourceConfiguration {
     }
 
     @Bean
-    public ServletRegistrationBean servletRegistrationBean(){
-        return new ServletRegistrationBean(new StatViewServlet(),"/druid/*");
+    public ServletRegistrationBean servletRegistrationBean() {
+        return new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
     }
 }
