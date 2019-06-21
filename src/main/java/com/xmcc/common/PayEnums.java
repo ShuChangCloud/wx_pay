@@ -1,9 +1,12 @@
 package com.xmcc.common;
 
+import lombok.Getter;
+
 /**
  * @company xmcc
  * @create create by qcc on 2019-06-20 17:24
  */
+@Getter
 public enum PayEnums {
 
     WAIT(0,"等待支付"),
@@ -18,4 +21,7 @@ public enum PayEnums {
         this.code = code;
         this.msg = msg;
     }
+
+
+
 }
