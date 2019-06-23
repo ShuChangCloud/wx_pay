@@ -1,5 +1,6 @@
 package com.xmcc.service.impl;
 
+
 import com.xmcc.common.ResultEnums;
 import com.xmcc.dto.ProductCategoryDto;
 import com.xmcc.dto.ProductInfoDto;
@@ -10,6 +11,7 @@ import com.xmcc.service.ProductInfoService;
 import com.xmcc.util.ResultResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -23,6 +25,7 @@ import static java.util.stream.Collectors.*;
  */
 
 @Service
+
 public class ProductInfoServiceImpl implements ProductInfoService {
 
     @Autowired
@@ -76,6 +79,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     }
 
     @Override
+    @Transactional
     public void updateProductInfo(ProductInfo info) {
         productInfoRepository.save(info);
     }

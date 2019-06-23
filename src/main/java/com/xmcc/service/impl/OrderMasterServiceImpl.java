@@ -20,6 +20,7 @@ import com.xmcc.util.IDUtils;
 import com.xmcc.util.ResultResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import static java.util.stream.Collectors.*;
  */
 
 @Service
+@Transactional
 public class OrderMasterServiceImpl implements OrderMasterService {
 
     @Autowired
@@ -48,7 +50,7 @@ public class OrderMasterServiceImpl implements OrderMasterService {
     private OrderMasterRepository orderMasterRepository;
     @Override
     public ResultResponse insertOrder(OrderMasterDto masterDto) {
-        //获取所有订单项
+        //获取所有订单项items
         List<OrderDetailDto> items = masterDto.getItems();
 
         //订单项列表orderDetailList
@@ -114,7 +116,7 @@ public class OrderMasterServiceImpl implements OrderMasterService {
         orderMasterRepository.save(master);
 
         HashMap<String, String> map = Maps.newHashMap();
-        map.put("orderId",master.getOrderId());
+        map.put("orderId",uuid);
         return ResultResponse.success(map);
     }
 

@@ -7,10 +7,11 @@ import com.xmcc.repository.ProductCategoryRepository;
 import com.xmcc.service.ProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import static java.util.stream.Collectors.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @company xmcc

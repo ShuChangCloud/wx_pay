@@ -14,10 +14,11 @@ import java.util.List;
  */
 
 @Service
-@Transactional //加入事物管理
+
 public class OrderDetailServiceImpl extends BatchDaoImpl<OrderDetail> implements OrderDetailService {
 
     @Override
+    @Transactional //加入事物管理
     public void batchInsert(List<OrderDetail> list) {
         super.batchInsert(list);
     }

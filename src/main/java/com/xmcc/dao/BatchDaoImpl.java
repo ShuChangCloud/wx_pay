@@ -1,6 +1,8 @@
 package com.xmcc.dao;
 
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
@@ -18,6 +20,7 @@ public class BatchDaoImpl<T> implements BatchDao<T> {
     private EntityManager entityManager;
 
     @Override
+    @Transactional
     public void batchInsert(List<T> list) {
         for (int i = 0; i < list.size(); i++) {
             entityManager.persist(list.get(i));
