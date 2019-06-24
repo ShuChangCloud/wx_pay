@@ -1,5 +1,6 @@
 package com.xmcc.service.impl;
 
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.xmcc.common.OrderEnums;
@@ -7,10 +8,13 @@ import com.xmcc.common.PayEnums;
 import com.xmcc.common.ResultEnums;
 import com.xmcc.dto.OrderDetailDto;
 import com.xmcc.dto.OrderMasterDto;
+import com.xmcc.dto.OrderMasterDto1;
+import com.xmcc.dto.PageDto;
 import com.xmcc.entity.OrderDetail;
 import com.xmcc.entity.OrderMaster;
 import com.xmcc.entity.ProductInfo;
 import com.xmcc.exception.CustomException;
+import com.xmcc.repository.OrderDetailRepository;
 import com.xmcc.repository.OrderMasterRepository;
 import com.xmcc.service.OrderDetailService;
 import com.xmcc.service.OrderMasterService;
@@ -18,9 +22,14 @@ import com.xmcc.service.ProductInfoService;
 import com.xmcc.util.BigDecimalUtil;
 import com.xmcc.util.IDUtils;
 import com.xmcc.util.ResultResponse;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -48,6 +58,10 @@ public class OrderMasterServiceImpl implements OrderMasterService {
 
     @Autowired
     private OrderMasterRepository orderMasterRepository;
+
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
     @Override
     public ResultResponse insertOrder(OrderMasterDto masterDto) {
         //获取所有订单项items
@@ -116,8 +130,64 @@ public class OrderMasterServiceImpl implements OrderMasterService {
         orderMasterRepository.save(master);
 
         HashMap<String, String> map = Maps.newHashMap();
-        map.put("orderId",uuid);
+        map.put("orderId",master.getOrderId());
         return ResultResponse.success(map);
+    }
+
+    @Override
+    public List<OrderMaster> findOrderByOpenidPageable(PageDto pageDto) {
+        Pageable pageable = new PageRequest(pageDto.getPage(),pageDto.getSize());
+        Page<OrderMaster> masterPage = orderMasterRepository.findOrderMasterByBuyerOpenidPageable(pageDto.getOpenid(), pageable);
+        List<OrderMaster> masterList = masterPage.getContent();
+        return masterList;
+    }
+
+    /**
+     * 通过openID和orderid去查询订单
+     * @param openid
+     * @param orderId
+     * @return 订单
+     */
+    @Override
+    public OrderMasterDto1 findOrderDetail(String openid, String orderId) {
+        //通过openid和orderId查找order_detailid的列表
+        //通过detailid列表查询所有的order detail
+        OrderMaster orderMaster = orderMasterRepository.findOrderMasterByBuyerOpenidAndOrderId(openid, orderId);
+        List<OrderDetail> orderDetailList = orderDetailRepository.findOrderDetailByOrderId(orderId);
+        OrderMasterDto1 dto = new OrderMasterDto1();
+        BeanUtils.copyProperties(orderMaster, dto);
+        dto.setOrderDetailList(orderDetailList);
+        return dto;
+    }
+
+    /**
+     * 取消订单
+     * @param openid 用户openID
+     * @param orderId 订单id
+     * @return
+     */
+    @Override
+    @Transactional
+    public boolean cancelOrder(String openid, String orderId) {
+        //根据orderID查询订单是否存在
+        //查询订单状态 -订单状态不为0的不可取消订单
+        //将订单的状态改为取消
+        //根据订单号查询订单详情列表，将订单详情里的商品已下单的商品数量 返回给数据库
+        if (StringUtils.isEmpty(orderId)&&StringUtils.isEmpty(openid)) {
+            throw new CustomException(OrderEnums.OPENID_ERROR.getMsg()+"或orderId参数异常");
+        }
+        if (orderMasterRepository.countByOrderId(orderId)<1) {
+            throw new CustomException(OrderEnums.ORDER_NOT_EXITS.getMsg());
+        }
+        //获取订单
+        OrderMaster orderMaster = orderMasterRepository.findOrderMasterByBuyerOpenidAndOrderId(openid, orderId);
+        if (orderMaster.getOrderStatus()!=0) {
+            throw new CustomException("订单状态异常:"+orderMaster.getOrderStatus());
+        }
+
+        //TODO:将订单详情里的商品已下单的商品数量 返回给数据库
+        orderMasterRepository.updateOrOrderStatus(OrderEnums.CANCEL.getCode(),orderId);
+        return true;
     }
 
     private Function<OrderDetail, OrderDetail> getOrderDetailOrderDetailFunction(String uuid) {
