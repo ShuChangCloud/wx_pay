@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
+            <version>29.0-jre</version>
         </dependency>
         <!-- json格式转换-->
         <!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl -->
